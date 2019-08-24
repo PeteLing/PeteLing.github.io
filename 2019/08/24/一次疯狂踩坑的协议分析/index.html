@@ -5,7 +5,7 @@
   
 
 
-<html class="theme-next muse use-motion" lang="en">
+<html class="theme-next muse use-motion" lang="zh-CN">
 <head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -86,7 +86,7 @@
 <meta property="og:url" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/index.html">
 <meta property="og:site_name" content="Eight Dimensions">
 <meta property="og:description" content="在一次Android协议分析过程中，踩了很多各种各样的坑，但是从中也积累了一些经验，这里稍微做一下记录">
-<meta property="og:locale" content="en">
+<meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190824025628877.png">
 <meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190824022428057.png">
 <meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190824022614962.png">
@@ -100,7 +100,7 @@
 <meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190819181830149.png">
 <meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190819184758303.png">
 <meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190819184910960.png">
-<meta property="og:updated_time" content="2019-08-24T11:44:11.950Z">
+<meta property="og:updated_time" content="2019-08-24T11:55:44.410Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一次疯狂踩坑的协议分析">
 <meta name="twitter:description" content="在一次Android协议分析过程中，踩了很多各种各样的坑，但是从中也积累了一些经验，这里稍微做一下记录">
@@ -152,7 +152,7 @@
 
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
   
   
@@ -270,7 +270,7 @@
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="John Doe">
+      <meta itemprop="name" content="Shad0w">
       <meta itemprop="description" content>
       <meta itemprop="image" content="/images/avatar.gif">
     </span>
@@ -336,15 +336,15 @@
       
         <p>在一次Android协议分析过程中，踩了很多各种各样的坑，但是从中也积累了一些经验，这里稍微做一下记录</p>
 <a id="more"></a>
-<h2 id="0x1-抓包分析"><a href="#0x1-抓包分析" class="headerlink" title="0x1 抓包分析"></a>0x1 抓包分析</h2><p><img src="image-20190824025628877.png" alt></p>
+<h2 id="抓包分析"><a href="#抓包分析" class="headerlink" title="抓包分析"></a>抓包分析</h2><p><img src="image-20190824025628877.png" alt></p>
 <p>传输过程中都没有任何明文信息，都是以上这种方式传输数据。另外注意到这里用了2个<code>|</code>符号把ReqEncyptData数据分成3块。</p>
-<h2 id="0x2-Java代码分析"><a href="#0x2-Java代码分析" class="headerlink" title="0x2 Java代码分析"></a>0x2 Java代码分析</h2><p>jadx-gui打开apk脱壳之后的dex文件，先根据字段名<code>ReqEncyptData</code>全局搜索 </p>
+<h2 id="Java代码分析"><a href="#Java代码分析" class="headerlink" title="Java代码分析"></a>Java代码分析</h2><p>jadx-gui打开apk脱壳之后的dex文件，先根据字段名<code>ReqEncyptData</code>全局搜索 </p>
 <p><img src="image-20190824022428057.png" alt></p>
 <p>接着搜索<code>EncryptedKey</code>得到了一个关键函数encryptRequest</p>
 <p><img src="image-20190824022614962.png" alt="image-20190824022614962"></p>
 <p>不断的往下跟会发现最终的加密逻辑并没有写在java，而是写在了so层里面</p>
 <p><img src="image-20190824022906292.png" alt="image-20190824022906292"></p>
-<h2 id="0x3-so文件分析"><a href="#0x3-so文件分析" class="headerlink" title="0x3 so文件分析"></a>0x3 so文件分析</h2><p>Java层分析出是加解密是在so文件里面操作，先定位到具体so文件，这里还用了动态加载方式，最后定位到getValue这个具体函数。</p>
+<h2 id="so文件分析"><a href="#so文件分析" class="headerlink" title="so文件分析"></a>so文件分析</h2><p>Java层分析出是加解密是在so文件里面操作，先定位到具体so文件，这里还用了动态加载方式，最后定位到getValue这个具体函数。</p>
 <p><img src="image-20190819175014237.png" alt></p>
 <p>往下看，这里似乎是用了AES的cbc的加密模式，但是也不能完全确定下来。</p>
 <p><img src="image-20190819175107765.png" alt></p>
@@ -357,14 +357,14 @@
 
 <p>传入的参数分别是 输入、输出、数据长度、密钥、偏移IV、还有一个block。</p>
 <p>因为安卓apk做了加固，尝试hook的时候发现hook不出来，就在so里面不断找有没有硬编码的key和iv，各种尝试发现没找着，实在操作不了就尝试在ios端动态调试。</p>
-<h2 id="0x4-IDA-ios二进制文件分析"><a href="#0x4-IDA-ios二进制文件分析" class="headerlink" title="0x4 IDA ios二进制文件分析"></a>0x4 IDA ios二进制文件分析</h2><p>根据数据包字段，全局搜索”ReqEncyptData”，定位到一个函数<code>DESEncrypt encryptUseDES</code></p>
+<h2 id="IDA-ios二进制文件分析"><a href="#IDA-ios二进制文件分析" class="headerlink" title="IDA ios二进制文件分析"></a>IDA ios二进制文件分析</h2><p>根据数据包字段，全局搜索”ReqEncyptData”，定位到一个函数<code>DESEncrypt encryptUseDES</code></p>
 <p><img src="image-20190819180159977.png" alt="image-20190819180159977"></p>
 <p>函数里面，v10就是burp抓到的报文，第二个字段。v10是sub_10097函数返回值，跟进去，就找到了和android so文件对应的加解密函数。</p>
 <p><img src="image-20190819180344136.png" alt="image-20190819180344136"></p>
 <p>这里v49、v51就是对应AES的密钥和偏移。最后lldb动态调试ios进程，</p>
 <p><img src="image-20190819180949383.png" alt="image-20190819180949383"></p>
 <p>获取到具体的密钥和偏移。</p>
-<h2 id="0x5-踩坑"><a href="#0x5-踩坑" class="headerlink" title="0x5 踩坑"></a>0x5 踩坑</h2><p>本以为就这样好了，结果加解密的时候发现各种问题。</p>
+<h2 id="踩坑"><a href="#踩坑" class="headerlink" title="踩坑"></a>踩坑</h2><p>本以为就这样好了，结果加解密的时候发现各种问题。</p>
 <ol>
 <li><p>直接用key和iv发现解不了，后来发现虽然这里实现了openssl开源加解密函数库，但是可能做了魔改，比如这里就是在传参的时候key和iv反过来了。</p>
 </li>
@@ -383,7 +383,7 @@
 <p><img src="image-20190819184910960.png" alt="image-20190819184910960"></p>
 </li>
 </ol>
-<h2 id="0x6-总结"><a href="#0x6-总结" class="headerlink" title="0x6 总结"></a>0x6 总结</h2><p>目前为止，因为加密字段分成了三块，第二块已经成功解密了，而第三块只是求请求内容md5值。但是具体渗透测试的时候发现，服务器并没有对第三段数据做校验！因为加密的数据终究要在服务器解密，而且AES加密的密钥secretKey和偏移值IV都是随机生成的，这也就是意味着这两个值也必须发送给服务器，服务器才能进行对应的解密，所以推测第一块加密的字段就是这两个值。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>目前为止，因为加密字段分成了三块，第二块已经成功解密了，而第三块只是求请求内容md5值。但是具体渗透测试的时候发现，服务器并没有对第三段数据做校验！因为加密的数据终究要在服务器解密，而且AES加密的密钥secretKey和偏移值IV都是随机生成的，这也就是意味着这两个值也必须发送给服务器，服务器才能进行对应的解密，所以推测第一块加密的字段就是这两个值。</p>
 <p>虽然没有完全解出来第一个字段的生成方式，但是成功将第二个字段解密出来已经足够了，在app没有重启的情况下，secretKey和偏移值IV不会发生变化，所以每次运行的时候把这两个值log出来就可以对第二个加密字段进行篡改接着可以愉快的做测试了。</p>
 
       
@@ -473,7 +473,7 @@
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
-              <p class="site-author-name" itemprop="name">John Doe</p>
+              <p class="site-author-name" itemprop="name">Shad0w</p>
               <p class="site-description motion-element" itemprop="description"></p>
           </div>
 
@@ -508,6 +508,16 @@
           
 
           
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/PeteLing" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
 
           
           
@@ -530,7 +540,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x1-抓包分析"><span class="nav-number">1.</span> <span class="nav-text">0x1 抓包分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x2-Java代码分析"><span class="nav-number">2.</span> <span class="nav-text">0x2 Java代码分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x3-so文件分析"><span class="nav-number">3.</span> <span class="nav-text">0x3 so文件分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x4-IDA-ios二进制文件分析"><span class="nav-number">4.</span> <span class="nav-text">0x4 IDA ios二进制文件分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x5-踩坑"><span class="nav-number">5.</span> <span class="nav-text">0x5 踩坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x6-总结"><span class="nav-number">6.</span> <span class="nav-text">0x6 总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#抓包分析"><span class="nav-number">1.</span> <span class="nav-text">抓包分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java代码分析"><span class="nav-number">2.</span> <span class="nav-text">Java代码分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#so文件分析"><span class="nav-number">3.</span> <span class="nav-text">so文件分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IDA-ios二进制文件分析"><span class="nav-number">4.</span> <span class="nav-text">IDA ios二进制文件分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#踩坑"><span class="nav-number">5.</span> <span class="nav-text">踩坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>
@@ -554,7 +564,7 @@
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">John Doe</span>
+  <span class="author" itemprop="copyrightHolder">Shad0w</span>
 
   
 </div>
