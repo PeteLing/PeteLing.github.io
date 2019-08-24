@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="Android,">
 
 
 
@@ -79,12 +79,13 @@
 
 
 
-<meta name="description" content="0x1 抓包分析 传输过程中都没有任何明文信息，都是以上这种方式传输数据。另外注意到这里用了2个|符号把ReqEncyptData数据分成3块。 0x2 Java代码分析jadx-gui打开apk脱壳之后的dex文件，先根据字段名ReqEncyptData全局搜索   接着搜索EncryptedKey得到了一个关键函数encryptRequest  不断的往下跟会发现最终的加密逻辑并没有写在jav">
+<meta name="description" content="在一次Android协议分析过程中，踩了很多各种各样的坑，但是从中也积累了一些经验，这里稍微做一下记录">
+<meta name="keywords" content="Android">
 <meta property="og:type" content="article">
 <meta property="og:title" content="一次疯狂踩坑的协议分析">
 <meta property="og:url" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/index.html">
 <meta property="og:site_name" content="Eight Dimensions">
-<meta property="og:description" content="0x1 抓包分析 传输过程中都没有任何明文信息，都是以上这种方式传输数据。另外注意到这里用了2个|符号把ReqEncyptData数据分成3块。 0x2 Java代码分析jadx-gui打开apk脱壳之后的dex文件，先根据字段名ReqEncyptData全局搜索   接着搜索EncryptedKey得到了一个关键函数encryptRequest  不断的往下跟会发现最终的加密逻辑并没有写在jav">
+<meta property="og:description" content="在一次Android协议分析过程中，踩了很多各种各样的坑，但是从中也积累了一些经验，这里稍微做一下记录">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190824025628877.png">
 <meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190824022428057.png">
@@ -99,10 +100,10 @@
 <meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190819181830149.png">
 <meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190819184758303.png">
 <meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190819184910960.png">
-<meta property="og:updated_time" content="2019-08-24T11:31:00.420Z">
+<meta property="og:updated_time" content="2019-08-24T11:44:11.950Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一次疯狂踩坑的协议分析">
-<meta name="twitter:description" content="0x1 抓包分析 传输过程中都没有任何明文信息，都是以上这种方式传输数据。另外注意到这里用了2个|符号把ReqEncyptData数据分成3块。 0x2 Java代码分析jadx-gui打开apk脱壳之后的dex文件，先根据字段名ReqEncyptData全局搜索   接着搜索EncryptedKey得到了一个关键函数encryptRequest  不断的往下跟会发现最终的加密逻辑并没有写在jav">
+<meta name="twitter:description" content="在一次Android协议分析过程中，踩了很多各种各样的坑，但是从中也积累了一些经验，这里稍微做一下记录">
 <meta name="twitter:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190824025628877.png">
 
 
@@ -333,7 +334,9 @@
       
 
       
-        <h2 id="0x1-抓包分析"><a href="#0x1-抓包分析" class="headerlink" title="0x1 抓包分析"></a>0x1 抓包分析</h2><p><img src="image-20190824025628877.png" alt></p>
+        <p>在一次Android协议分析过程中，踩了很多各种各样的坑，但是从中也积累了一些经验，这里稍微做一下记录</p>
+<a id="more"></a>
+<h2 id="0x1-抓包分析"><a href="#0x1-抓包分析" class="headerlink" title="0x1 抓包分析"></a>0x1 抓包分析</h2><p><img src="image-20190824025628877.png" alt></p>
 <p>传输过程中都没有任何明文信息，都是以上这种方式传输数据。另外注意到这里用了2个<code>|</code>符号把ReqEncyptData数据分成3块。</p>
 <h2 id="0x2-Java代码分析"><a href="#0x2-Java代码分析" class="headerlink" title="0x2 Java代码分析"></a>0x2 Java代码分析</h2><p>jadx-gui打开apk脱壳之后的dex文件，先根据字段名<code>ReqEncyptData</code>全局搜索 </p>
 <p><img src="image-20190824022428057.png" alt></p>
@@ -396,6 +399,12 @@
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
       
 
       
@@ -483,6 +492,15 @@
 
             
 
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
             
 
           </nav>
