@@ -79,32 +79,36 @@
 
 
 
-<meta name="description" content="在一次Android协议分析过程中，踩了很多各种各样的坑，但是从中也积累了一些经验，这里稍微做一下记录">
+<meta name="description" content="Android逆向学习过程中的自己做了一些练手项目，这里稍微记录一下">
 <meta name="keywords" content="Android">
 <meta property="og:type" content="article">
-<meta property="og:title" content="一次疯狂踩坑的协议分析">
-<meta property="og:url" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/index.html">
+<meta property="og:title" content="Android简单逆向实战">
+<meta property="og:url" content="http://yoursite.com/2019/08/24/Android简单逆向实战/index.html">
 <meta property="og:site_name" content="Eight Dimensions">
-<meta property="og:description" content="在一次Android协议分析过程中，踩了很多各种各样的坑，但是从中也积累了一些经验，这里稍微做一下记录">
+<meta property="og:description" content="Android逆向学习过程中的自己做了一些练手项目，这里稍微记录一下">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190824025628877.png">
-<meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190824022428057.png">
-<meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190824022614962.png">
-<meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190824022906292.png">
-<meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190819175014237.png">
-<meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190819175107765.png">
-<meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190819175359224.png?lastModify=1566584880">
-<meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190819180159977.png">
-<meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190819180344136.png">
-<meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190819180949383.png">
-<meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190819181830149.png">
-<meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190819184758303.png">
-<meta property="og:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190819184910960.png">
-<meta property="og:updated_time" content="2019-08-24T11:55:44.410Z">
+<meta property="og:image" content="http://yoursite.com/2019/08/24/Android简单逆向实战/image-20190801172818596.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/24/Android简单逆向实战/image-20190806102815360.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/24/Android简单逆向实战/image-20190806103012910.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/24/Android简单逆向实战/image-20190806103131427.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/24/Android简单逆向实战/image-20190806103341091.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/24/Android简单逆向实战/image-20190806103423852.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/24/Android简单逆向实战/image-20190806103758739.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/24/Android简单逆向实战/image-20190806104101462.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/24/Android简单逆向实战/image-20190806104507953.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/24/Android简单逆向实战/image-20190806105421716.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/24/Android简单逆向实战/image-20190806105529698.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/24/Android简单逆向实战/image-20190806110040985.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/24/Android简单逆向实战/image-20190806110154366.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/24/Android简单逆向实战/image-20190806110916047.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/24/Android简单逆向实战/image-20190806111255233.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/24/Android简单逆向实战/image-20190806114530600.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/24/Android简单逆向实战/image-20190806114709720.png">
+<meta property="og:updated_time" content="2019-08-24T13:29:31.369Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="一次疯狂踩坑的协议分析">
-<meta name="twitter:description" content="在一次Android协议分析过程中，踩了很多各种各样的坑，但是从中也积累了一些经验，这里稍微做一下记录">
-<meta name="twitter:image" content="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/image-20190824025628877.png">
+<meta name="twitter:title" content="Android简单逆向实战">
+<meta name="twitter:description" content="Android逆向学习过程中的自己做了一些练手项目，这里稍微记录一下">
+<meta name="twitter:image" content="http://yoursite.com/2019/08/24/Android简单逆向实战/image-20190801172818596.png">
 
 
 
@@ -134,13 +138,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/">
+  <link rel="canonical" href="http://yoursite.com/2019/08/24/Android简单逆向实战/">
 
 
 
 
 
-  <title>一次疯狂踩坑的协议分析 | Eight Dimensions</title>
+  <title>Android简单逆向实战 | Eight Dimensions</title>
   
 
 
@@ -267,7 +271,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/24/Android简单逆向实战/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Shad0w">
@@ -284,7 +288,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">一次疯狂踩坑的协议分析</h1>
+          <h1 class="post-title" itemprop="name headline">Android简单逆向实战</h1>
         
 
         <div class="post-meta">
@@ -296,7 +300,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-24T02:58:14+08:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-24T21:00:03+08:00">
                 2019-08-24
               </time>
             
@@ -334,57 +338,54 @@
       
 
       
-        <p>在一次Android协议分析过程中，踩了很多各种各样的坑，但是从中也积累了一些经验，这里稍微做一下记录</p>
+        <p>Android逆向学习过程中的自己做了一些练手项目，这里稍微记录一下</p>
 <a id="more"></a>
-<h2 id="抓包分析"><a href="#抓包分析" class="headerlink" title="抓包分析"></a>抓包分析</h2><p><img src="image-20190824025628877.png" alt></p>
-<p>传输过程中都没有任何明文信息，都是以上这种方式传输数据。另外注意到这里用了2个<code>|</code>符号把ReqEncyptData数据分成3块。</p>
-<h2 id="Java代码分析"><a href="#Java代码分析" class="headerlink" title="Java代码分析"></a>Java代码分析</h2><p>jadx-gui打开apk脱壳之后的dex文件，先根据字段名<code>ReqEncyptData</code>全局搜索 </p>
-<p><img src="image-20190824022428057.png" alt></p>
-<p>接着搜索<code>EncryptedKey</code>得到了一个关键函数encryptRequest</p>
-<p><img src="image-20190824022614962.png" alt="image-20190824022614962"></p>
-<p>不断的往下跟会发现最终的加密逻辑并没有写在java，而是写在了so层里面</p>
-<p><img src="image-20190824022906292.png" alt="image-20190824022906292"></p>
-<h2 id="so文件分析"><a href="#so文件分析" class="headerlink" title="so文件分析"></a>so文件分析</h2><p>Java层分析出是加解密是在so文件里面操作，先定位到具体so文件，这里还用了动态加载方式，最后定位到getValue这个具体函数。</p>
-<p><img src="image-20190819175014237.png" alt></p>
-<p>往下看，这里似乎是用了AES的cbc的加密模式，但是也不能完全确定下来。</p>
-<p><img src="image-20190819175107765.png" alt></p>
-<p>这里输出格式和报文相符分成了三段”%s|%s|%s”，具体分析知道第二段是加密后的数据，第三段是加密前数据的md5值，估计是传递给服务端做校验。第一段估计是和密钥有关，但是看明白具体怎么生成的。</p>
-<p>然后看到上面AES_cbc_encrypt函数，推测这里就是数据加密方法，但是参数太多了，不知道对应参数是什么。</p>
-<p>不断的往下跟，最后跟到<code>CRYPTO_cbc128_encrypt</code>，google一下发现是openssl的函数，这里是用了openssl的加解密函数库。</p>
-<p><img src="image-20190819175359224.png?lastModify=1566584880" alt="img"></p>
-<p>在github上看到函数的具体的定义</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">void CRYPTO_cbc128_encrypt(const unsigned char *in, unsigned char *out,</span><br><span class="line">                           size_t len, const void *key,</span><br><span class="line">                           unsigned char ivec[16], block128_f block)</span><br></pre></td></tr></table></figure>
 
-<p>传入的参数分别是 输入、输出、数据长度、密钥、偏移IV、还有一个block。</p>
-<p>因为安卓apk做了加固，尝试hook的时候发现hook不出来，就在so里面不断找有没有硬编码的key和iv，各种尝试发现没找着，实在操作不了就尝试在ios端动态调试。</p>
-<h2 id="IDA-ios二进制文件分析"><a href="#IDA-ios二进制文件分析" class="headerlink" title="IDA ios二进制文件分析"></a>IDA ios二进制文件分析</h2><p>根据数据包字段，全局搜索”ReqEncyptData”，定位到一个函数<code>DESEncrypt encryptUseDES</code></p>
-<p><img src="image-20190819180159977.png" alt="image-20190819180159977"></p>
-<p>函数里面，v10就是burp抓到的报文，第二个字段。v10是sub_10097函数返回值，跟进去，就找到了和android so文件对应的加解密函数。</p>
-<p><img src="image-20190819180344136.png" alt="image-20190819180344136"></p>
-<p>这里v49、v51就是对应AES的密钥和偏移。最后lldb动态调试ios进程，</p>
-<p><img src="image-20190819180949383.png" alt="image-20190819180949383"></p>
-<p>获取到具体的密钥和偏移。</p>
-<h2 id="踩坑"><a href="#踩坑" class="headerlink" title="踩坑"></a>踩坑</h2><p>本以为就这样好了，结果加解密的时候发现各种问题。</p>
-<ol>
-<li><p>直接用key和iv发现解不了，后来发现虽然这里实现了openssl开源加解密函数库，但是可能做了魔改，比如这里就是在传参的时候key和iv反过来了。</p>
-</li>
-<li><p>虽然能解密但是解出来是这样的</p>
-<p><img src="image-20190819181830149.png" alt="image-20190819181830149"></p>
-<p>明显前面应该是有<code>{</code>对应结尾的<code>}</code>，一开始怀疑的padding填充的问题，但是填充问题的话最多在结尾解码出问题不会在前面出现乱码。最后发现原来key和iv用的是同一个值，而且就是key的值。</p>
-</li>
-<li><p>padding的选取，这里当时没有仔细考虑，就都试试。</p>
-</li>
-<li><p>密钥和iv是不是固定的，退出程序重新登陆再看一下key和iv，发现都做了改变。</p>
-</li>
-<li><p>后面再仔细在ida里面找，发现key是随机生成的，而padding是用了pkcs5padding。</p>
-<p>这里随机生成key</p>
-<p><img src="image-20190819184758303.png" alt="image-20190819184758303"></p>
-<p>这里取余就是用了 pkcs5padding或者pkcs7padding了。</p>
-<p><img src="image-20190819184910960.png" alt="image-20190819184910960"></p>
-</li>
-</ol>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>目前为止，因为加密字段分成了三块，第二块已经成功解密了，而第三块只是求请求内容md5值。但是具体渗透测试的时候发现，服务器并没有对第三段数据做校验！因为加密的数据终究要在服务器解密，而且AES加密的密钥secretKey和偏移值IV都是随机生成的，这也就是意味着这两个值也必须发送给服务器，服务器才能进行对应的解密，所以推测第一块加密的字段就是这两个值。</p>
-<p>虽然没有完全解出来第一个字段的生成方式，但是成功将第二个字段解密出来已经足够了，在app没有重启的情况下，secretKey和偏移值IV不会发生变化，所以每次运行的时候把这两个值log出来就可以对第二个加密字段进行篡改接着可以愉快的做测试了。</p>
+
+
+<h2 id="某单机Android小游戏支付绕过"><a href="#某单机Android小游戏支付绕过" class="headerlink" title="某单机Android小游戏支付绕过"></a>某单机Android小游戏支付绕过</h2><h3 id="分析过程"><a href="#分析过程" class="headerlink" title="分析过程"></a>分析过程</h3><p>在支付过程中查看logcat日志，看到一句中文信息”单机充值查询到的订单状态不正常”</p>
+<p>jadx全局搜索 “单机充值”</p>
+<p>定位到一个具体函数 <code>notifyDeliverGoods</code></p>
+<p><img src="image-20190801172818596.png" alt="image-20190801172818596"></p>
+<p>虽然一开始找的时候定位到这里，但是没有过多的分析具体逻辑；后面找了很久确实没有找到其他相关逻辑又回去这里了。</p>
+<p>注意函数名字为<code>notifyDeliverGoods</code>，另外这个<code>z</code>参数可能就是判断是否支付成功的关键。</p>
+<p>直接在smali代码中注释掉if(z)这个判断跳转，让函数执行到<code>return true</code>。</p>
+<p>成功绕过了支付逻辑白piao成功！</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>有时候实在没有找到什么突破口的话，多看一下logcat日志或许会有找到蛛丝马迹</li>
+<li>如果函数没有做混淆视听的话，可以留意一下函数名字，毕竟开发不会随便命名</li>
+</ul>
+<h2 id="霸哥磁力搜索-自签名校验绕过"><a href="#霸哥磁力搜索-自签名校验绕过" class="headerlink" title="霸哥磁力搜索 自签名校验绕过"></a>霸哥磁力搜索 自签名校验绕过</h2><h3 id="分析入口"><a href="#分析入口" class="headerlink" title="分析入口"></a>分析入口</h3><p>因为Android自签名校验大多都会调用<code>getPackageManager</code>接口，先全局搜索<code>signatures[0]</code>定位到<code>qian</code>这个函数</p>
+<p><img src="image-20190806102815360.png" alt="image-20190806102815360"></p>
+<p>简单，把调用qian函数的地方注释掉，在smali文件里grep查询发现只有一个调用，直接注释。</p>
+<p><img src="image-20190806103012910.png" alt="image-20190806103012910"></p>
+<p><img src="image-20190806103131427.png" alt="image-20190806103131427"></p>
+<p>接着继续看看其他代码，发现有调用native函数bug()，并导入了so文件。</p>
+<p><img src="image-20190806103341091.png" alt="image-20190806103341091"></p>
+<p><img src="image-20190806103423852.png" alt="image-20190806103423852"></p>
+<h3 id="深入挖掘"><a href="#深入挖掘" class="headerlink" title="深入挖掘"></a>深入挖掘</h3><p>因为apk不仅在java层做了签名校验，也有可能在so层也做了二次校验；于是用IDA分析一下libbug.so</p>
+<p><img src="image-20190806103758739.png" alt="image-20190806103758739"></p>
+<p>在<code>Java_com_bug_bt_MainActivity_bug</code>里有一个明显的<code>getSignHashCode</code>可能与签名有关</p>
+<p><img src="image-20190806104101462.png" alt="image-20190806104101462"></p>
+<p>这里通过jni调用java函数，明显这里和qian函数一样的作用，功能都是校验包签名。看了下，也没什么其他有用的功能，那行，再把调用native函数bug的地方都给注释掉</p>
+<p><img src="image-20190806104507953.png" alt="image-20190806104507953"></p>
+<p>重打包发现还是不行，疑惑了一段时间，是还有其他做校验的地方吗？</p>
+<h3 id="逻辑错误"><a href="#逻辑错误" class="headerlink" title="逻辑错误"></a>逻辑错误</h3><p>这个apk代码量也非常少，都过了一遍发现没有其他做校验的地方了。后来才知道，这里的一个Toast方法写得有点问题。</p>
+<p><img src="image-20190806105421716.png" alt="image-20190806105421716"></p>
+<p><img src="image-20190806105529698.png" alt="image-20190806105529698"></p>
+<p>这大概明白了，因为直接注释了bug()，导致<code>this.eee=&quot;&quot;</code>，就会进入Toast自杀式调用。那解决办法就是注释bug()同时，给this.eee赋值。</p>
+<p>看到smali代码这里取v0,v1做比较，而原本会把bug函数返回值赋给v0，那行直接给v0赋予一个不为空的字符串。</p>
+<p><img src="image-20190806110040985.png" alt="image-20190806110040985"></p>
+<p><img src="image-20190806110154366.png" alt="image-20190806110154366"></p>
+<p>这里发现程序可以进去了，但是搜索的时候却又崩溃了！</p>
+<p><img src="image-20190806110916047.png" alt="image-20190806110916047"></p>
+<p>发现在搜索按钮这里还有其他bug的调用，有点无语。</p>
+<p><img src="image-20190806111255233.png" alt="image-20190806111255233"></p>
+<p>如果调用的地方比较多的话，修改起来也不是特别方便，那干脆直接在so里面修改bug函数逻辑更加直接！</p>
+<p><img src="image-20190806114530600.png" alt="image-20190806114530600"></p>
+<p>这里CMP R0,R3，若相等就跳转到loc_D12否则执行exit；那很简单，用Keypatch修改成CMP R3,R3就好了。</p>
+<p><img src="image-20190806114709720.png" alt="image-20190806114709720"></p>
+<p>终于成功绕过了签名认证！</p>
 
       
     </div>
@@ -415,15 +416,15 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2019/08/24/一次疯狂踩坑的协议分析/" rel="next" title="一次疯狂踩坑的协议分析">
+                <i class="fa fa-chevron-left"></i> 一次疯狂踩坑的协议分析
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/08/24/Android简单逆向实战/" rel="prev" title="Android简单逆向实战">
-                Android简单逆向实战 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -556,7 +557,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#抓包分析"><span class="nav-number">1.</span> <span class="nav-text">抓包分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java代码分析"><span class="nav-number">2.</span> <span class="nav-text">Java代码分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#so文件分析"><span class="nav-number">3.</span> <span class="nav-text">so文件分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IDA-ios二进制文件分析"><span class="nav-number">4.</span> <span class="nav-text">IDA ios二进制文件分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#踩坑"><span class="nav-number">5.</span> <span class="nav-text">踩坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#某单机Android小游戏支付绕过"><span class="nav-number">1.</span> <span class="nav-text">某单机Android小游戏支付绕过</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#分析过程"><span class="nav-number">1.1.</span> <span class="nav-text">分析过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">1.2.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#霸哥磁力搜索-自签名校验绕过"><span class="nav-number">2.</span> <span class="nav-text">霸哥磁力搜索 自签名校验绕过</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#分析入口"><span class="nav-number">2.1.</span> <span class="nav-text">分析入口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#深入挖掘"><span class="nav-number">2.2.</span> <span class="nav-text">深入挖掘</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#逻辑错误"><span class="nav-number">2.3.</span> <span class="nav-text">逻辑错误</span></a></li></ol></li></ol></div>
             
 
           </div>
