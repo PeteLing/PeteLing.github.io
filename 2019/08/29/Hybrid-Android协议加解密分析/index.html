@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="Android,">
 
 
 
@@ -79,13 +79,24 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="Eight Dimensions">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="前言App渗透再次遇到加解密，并且这次具体分析与以往状况有点不太一样，于是记录下来。 抓包分析1234567891011POST /app/fsOrder/getAllFsOrderListByUser/ HTTP/1.1accept: application/jsonauthorization: Bearertimestamp: 1567065637961Content-Type: applic">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hybrid Android协议加解密分析">
+<meta property="og:url" content="http://yoursite.com/2019/08/29/Hybrid-Android协议加解密分析/index.html">
 <meta property="og:site_name" content="Eight Dimensions">
+<meta property="og:description" content="前言App渗透再次遇到加解密，并且这次具体分析与以往状况有点不太一样，于是记录下来。 抓包分析1234567891011POST /app/fsOrder/getAllFsOrderListByUser/ HTTP/1.1accept: application/jsonauthorization: Bearertimestamp: 1567065637961Content-Type: applic">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2019/08/29/Hybrid-Android协议加解密分析/image-20190829213635032.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/29/Hybrid-Android协议加解密分析/image-20190829215545667.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/29/Hybrid-Android协议加解密分析/image-20190829163308495.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/29/Hybrid-Android协议加解密分析/image-20190829221248691.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/29/Hybrid-Android协议加解密分析/image-20190829222254709.png">
+<meta property="og:updated_time" content="2019-08-29T15:04:56.537Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Eight Dimensions">
+<meta name="twitter:title" content="Hybrid Android协议加解密分析">
+<meta name="twitter:description" content="前言App渗透再次遇到加解密，并且这次具体分析与以往状况有点不太一样，于是记录下来。 抓包分析1234567891011POST /app/fsOrder/getAllFsOrderListByUser/ HTTP/1.1accept: application/jsonauthorization: Bearertimestamp: 1567065637961Content-Type: applic">
+<meta name="twitter:image" content="http://yoursite.com/2019/08/29/Hybrid-Android协议加解密分析/image-20190829213635032.png">
 
 
 
@@ -115,13 +126,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/">
+  <link rel="canonical" href="http://yoursite.com/2019/08/29/Hybrid-Android协议加解密分析/">
 
 
 
 
 
-  <title>Eight Dimensions</title>
+  <title>Hybrid Android协议加解密分析 | Eight Dimensions</title>
   
 
 
@@ -140,8 +151,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -234,9 +244,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -266,9 +276,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/29/Hybrid-Android协议加解密分析/" itemprop="url">Hybrid Android协议加解密分析</a></h1>
+          <h1 class="post-title" itemprop="name headline">Hybrid Android协议加解密分析</h1>
         
 
         <div class="post-meta">
@@ -318,9 +326,7 @@
       
 
       
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>App渗透再次遇到加解密，并且这次具体分析与以往状况有点不太一样，于是记录下来。</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>App渗透再次遇到加解密，并且这次具体分析与以往状况有点不太一样，于是记录下来。</p>
 <h2 id="抓包分析"><a href="#抓包分析" class="headerlink" title="抓包分析"></a>抓包分析</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">POST /app/fsOrder/getAllFsOrderListByUser/ HTTP/1.1</span><br><span class="line">accept: application/json</span><br><span class="line">authorization: Bearer</span><br><span class="line">timestamp: 1567065637961</span><br><span class="line">Content-Type: application/json; charset=utf-8</span><br><span class="line">Content-Length: 256</span><br><span class="line">Host: xxx.com</span><br><span class="line">Connection: close</span><br><span class="line">User-Agent: okhttp/3.6.0</span><br><span class="line"></span><br><span class="line">&#123;&quot;data&quot;:&quot;WmPKAOqVK3nmj2751oQM/1fyZJ/QQIMe2itv4LufWyk87WgwkJScqu68J/IQX1Pr&quot;,&quot;key&quot;:&quot;LywemIhGqlzqDBOXOPxdY+nifhoq2lBILu2N6WUpJ/4Hrp5W4ihHO1vQuw0joHV6JiiFNzP1+j9hqp1VzmZoboHqRa411BltsuxjEmEMyIJqWK/zDKK+jBreRLH5bXCQOm4gYzHMFY6rob7aC8NhfFhc1r9hfIozhoIK2vbzIUc=&quot;&#125;</span><br></pre></td></tr></table></figure>
 
 <p>可以看到请求包中数据都做了加密，分别有”data”和”key”两个字段。可以大胆猜测data为请求的数据，而key应该是加密data的密钥。惯用手段是用随机值作为key加密数据作为data，而这个随机值key又以一种固定密钥的加密方式加密之后一并附加到请求包中。而这里明显key的字段远远长于data字段，明显是两种很不一样的加密算法，而返回包也差不多。</p>
@@ -368,8 +374,6 @@
 </li>
 </ol>
 
-          
-        
       
     </div>
     
@@ -384,262 +388,36 @@
 
     <footer class="post-footer">
       
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/24/Android简单逆向实战/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Shad0w">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eight Dimensions">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/24/Android简单逆向实战/" itemprop="url">Android简单逆向实战</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-24T21:00:03+08:00">
-                2019-08-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
+        <div class="post-tags">
           
-
+            <a href="/tags/Android/" rel="tag"># Android</a>
           
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
         </div>
-      </header>
-    
+      
 
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
+      
       
       
 
       
-        
-          <p>Android逆向学习过程中的自己做了一些练手项目，这里稍微记录一下</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/08/24/Android简单逆向实战/#more" rel="contents">
-              Read more &raquo;
-            </a>
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/24/Android简单逆向实战/" rel="next" title="Android简单逆向实战">
+                <i class="fa fa-chevron-left"></i> Android简单逆向实战
+              </a>
+            
           </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
 
-    
+          <span class="post-nav-divider"></span>
 
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/24/一次疯狂踩坑的协议分析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Shad0w">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eight Dimensions">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/24/一次疯狂踩坑的协议分析/" itemprop="url">一次疯狂踩坑的协议分析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+          <div class="post-nav-prev post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-24T02:58:14+08:00">
-                2019-08-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          <p>在一次Android协议分析过程中，踩了很多各种各样的坑，但是从中也积累了一些经验，这里稍微做一下记录</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/08/24/一次疯狂踩坑的协议分析/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -649,10 +427,11 @@
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -660,6 +439,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -680,8 +463,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -742,6 +534,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#抓包分析"><span class="nav-number">2.</span> <span class="nav-text">抓包分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#逆向分析Java代码"><span class="nav-number">3.</span> <span class="nav-text">逆向分析Java代码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#关键词搜索"><span class="nav-number">3.1.</span> <span class="nav-text">关键词搜索</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法剖析Method-Profiling"><span class="nav-number">3.2.</span> <span class="nav-text">方法剖析Method Profiling</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#动态调试"><span class="nav-number">3.3.</span> <span class="nav-text">动态调试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前端JavaScript分析"><span class="nav-number">4.</span> <span class="nav-text">前端JavaScript分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#搜索"><span class="nav-number">4.1.</span> <span class="nav-text">搜索</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#细节分析"><span class="nav-number">4.2.</span> <span class="nav-text">细节分析</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -875,6 +683,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
