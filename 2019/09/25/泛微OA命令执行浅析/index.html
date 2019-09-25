@@ -87,10 +87,12 @@
 <meta property="og:site_name" content="Eight Dimensions">
 <meta property="og:description" content="泛微OA命令执行，后门般的漏洞">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-25T03:24:09.332Z">
+<meta property="og:image" content="http://yoursite.com/2019/09/25/泛微OA命令执行浅析/image-20190924134127483.png">
+<meta property="og:updated_time" content="2019-09-25T03:25:57.726Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="泛微OA命令执行浅析">
 <meta name="twitter:description" content="泛微OA命令执行，后门般的漏洞">
+<meta name="twitter:image" content="http://yoursite.com/2019/09/25/泛微OA命令执行浅析/image-20190924134127483.png">
 
 
 
@@ -339,7 +341,7 @@
 
 <p>这里exec像是Runtime.getRuntime.exec()一样执行系统命令，但是”eval”是什么呢？</p>
 <p>其实在bsh-2.0h4.jar中有一个commands目录，顾名思义其实就是定义了Interpreter能执行的bsh命令</p>
-<p>![image-20190924134127483](/Users/kaixin.lin/Library/Application Support/typora-user-images/image-20190924134127483.png)</p>
+<p><img src="image-20190924134127483.png" alt="image-20190924134127483"></p>
 <p>其中在<code>exec.bsh</code>定义了exec</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	Start an external application using the Java Runtime exec() method.</span></span><br><span class="line"><span class="comment">	Display any output to the standard BeanShell output using print().</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line">bsh.help.exec = <span class="string">"usage: exec( String arg )"</span>;</span><br><span class="line"></span><br><span class="line">exec( String arg ) </span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">this</span>.proc = Runtime.getRuntime().exec(arg);</span><br><span class="line">	<span class="keyword">this</span>.din = <span class="keyword">new</span> DataInputStream( proc.getInputStream() );</span><br><span class="line">	<span class="keyword">while</span>( (line=din.readLine()) != <span class="keyword">null</span> )</span><br><span class="line">		print(line);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
