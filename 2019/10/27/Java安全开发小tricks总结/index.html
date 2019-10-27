@@ -79,13 +79,13 @@
 
 
 
-<meta name="description" content="ReDOS 所谓的 ReDOS(Regular expression Denial of Service) 正则表达式拒绝服务攻击 。实际上开发人员使用了正则表达式来对用户输入的数据进行有效性校验, 当编写校验的正则表达式存在缺陷或者不严谨时, 攻击者可以构造特殊的字符串来大量消耗服务器的系统资源，造成服务器的服务中断或停止。  现在大多项目都会用到regex正则来匹配、识别字符串中特定的字符，但">
+<meta name="description" content="Java安全开发小tricks总结">
 <meta name="keywords" content="java">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java安全开发小tricks总结">
 <meta property="og:url" content="http://yoursite.com/2019/10/27/Java安全开发小tricks总结/index.html">
 <meta property="og:site_name" content="Eight Dimensions">
-<meta property="og:description" content="ReDOS 所谓的 ReDOS(Regular expression Denial of Service) 正则表达式拒绝服务攻击 。实际上开发人员使用了正则表达式来对用户输入的数据进行有效性校验, 当编写校验的正则表达式存在缺陷或者不严谨时, 攻击者可以构造特殊的字符串来大量消耗服务器的系统资源，造成服务器的服务中断或停止。  现在大多项目都会用到regex正则来匹配、识别字符串中特定的字符，但">
+<meta property="og:description" content="Java安全开发小tricks总结">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://yoursite.com/2019/10/27/Java安全开发小tricks总结/image-20191027195406528.png">
 <meta property="og:image" content="http://yoursite.com/2019/10/27/Java安全开发小tricks总结/image-20191027195440499.png">
@@ -93,10 +93,10 @@
 <meta property="og:image" content="http://yoursite.com/2019/10/27/Java安全开发小tricks总结/image-20191027201936579.png">
 <meta property="og:image" content="http://yoursite.com/2019/10/27/Java安全开发小tricks总结/image-20191027201739127.png">
 <meta property="og:image" content="http://yoursite.com/2019/10/27/Java安全开发小tricks总结/image-20191027201429457.png">
-<meta property="og:updated_time" content="2019-10-27T12:34:36.945Z">
+<meta property="og:updated_time" content="2019-10-27T12:37:15.512Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java安全开发小tricks总结">
-<meta name="twitter:description" content="ReDOS 所谓的 ReDOS(Regular expression Denial of Service) 正则表达式拒绝服务攻击 。实际上开发人员使用了正则表达式来对用户输入的数据进行有效性校验, 当编写校验的正则表达式存在缺陷或者不严谨时, 攻击者可以构造特殊的字符串来大量消耗服务器的系统资源，造成服务器的服务中断或停止。  现在大多项目都会用到regex正则来匹配、识别字符串中特定的字符，但">
+<meta name="twitter:description" content="Java安全开发小tricks总结">
 <meta name="twitter:image" content="http://yoursite.com/2019/10/27/Java安全开发小tricks总结/image-20191027195406528.png">
 
 
@@ -327,7 +327,10 @@
       
 
       
-        <h2 id="ReDOS"><a href="#ReDOS" class="headerlink" title="ReDOS"></a>ReDOS</h2><blockquote>
+        <p>Java安全开发小tricks总结</p>
+<a id="more"></a>
+
+<h2 id="ReDOS"><a href="#ReDOS" class="headerlink" title="ReDOS"></a>ReDOS</h2><blockquote>
 <p>所谓的 <strong>ReDOS(Regular expression Denial of Service) 正则表达式拒绝服务攻击</strong> 。实际上开发人员使用了正则表达式来对用户输入的数据进行有效性校验, 当编写校验的正则表达式存在缺陷或者不严谨时, 攻击者可以构造特殊的字符串来大量消耗服务器的系统资源，造成服务器的服务中断或停止。</p>
 </blockquote>
 <p>现在大多项目都会用到regex正则来匹配、识别字符串中特定的字符，但是对于正则表达式的使用一般开发都直接google搜索现有的正则表达式又或是基于简单实现需求的方式编写正则表达式，因为不严谨容易造成ReDos。</p>
@@ -406,7 +409,6 @@
 <h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><blockquote>
 <p>在shiro中获取当前用户信息，不要使用自定义的Realm中将信息存到session里；shiro中正确获取当前用户的方法应该为<code>(User) SecurityUtils.getSubject().getPrincipal()</code>来获取，这里是因为Subject中的principal只有在用户成功登录之后才进行更新。</p>
 </blockquote>
-<p>## </p>
 <p>参考链接：</p>
 <p><a href="http://www.lmxspace.com/2019/02/16/ReDOS初探/" target="_blank" rel="noopener">http://www.lmxspace.com/2019/02/16/ReDOS%E5%88%9D%E6%8E%A2/</a></p>
 <p><a href="https://www.itcodemonkey.com/article/13266.html" target="_blank" rel="noopener">https://www.itcodemonkey.com/article/13266.html</a></p>
