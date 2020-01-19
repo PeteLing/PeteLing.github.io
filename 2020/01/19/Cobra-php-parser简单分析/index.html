@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="起因朋友发现了Cobra php版本白盒审计工具有个DOS的bug，于是想着审一下代码调试一下看看是哪里的问题。具体工具介绍和使用方法就不多赘述了，详细可以看一下cobra 复现使用的php代码 12345&amp;lt;?php$sql=&quot;insert into items (name,content,attachment,price,catelog_id,user_id,addtime,limit_t">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cobra-php parser简单分析">
+<meta property="og:url" content="http://yoursite.com/2020/01/19/Cobra-php-parser简单分析/index.html">
+<meta property="og:site_name" content="Eight Dimensions">
+<meta property="og:description" content="起因朋友发现了Cobra php版本白盒审计工具有个DOS的bug，于是想着审一下代码调试一下看看是哪里的问题。具体工具介绍和使用方法就不多赘述了，详细可以看一下cobra 复现使用的php代码 12345&amp;lt;?php$sql=&quot;insert into items (name,content,attachment,price,catelog_id,user_id,addtime,limit_t">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2020/01/19/Cobra-php-parser简单分析/image-20200119111113177.png">
+<meta property="og:updated_time" content="2020-01-19T06:08:18.803Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Cobra-php parser简单分析">
+<meta name="twitter:description" content="起因朋友发现了Cobra php版本白盒审计工具有个DOS的bug，于是想着审一下代码调试一下看看是哪里的问题。具体工具介绍和使用方法就不多赘述了，详细可以看一下cobra 复现使用的php代码 12345&amp;lt;?php$sql=&quot;insert into items (name,content,attachment,price,catelog_id,user_id,addtime,limit_t">
+<meta name="twitter:image" content="http://yoursite.com/2020/01/19/Cobra-php-parser简单分析/image-20200119111113177.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/01/19/Cobra-php-parser简单分析/">
+
+
+
+
+
+  <title>Cobra-php parser简单分析 | Eight Dimensions</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Eight Dimensions</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/19/Cobra-php-parser简单分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Shad0w">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eight Dimensions">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Cobra-php parser简单分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-19T14:07:15+08:00">
+                2020-01-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>朋友发现了Cobra php版本白盒审计工具有个DOS的bug，于是想着审一下代码调试一下看看是哪里的问题。具体工具介绍和使用方法就不多赘述了，详细可以看一下<a href="https://github.com/WhaleShark-Team/cobra" target="_blank" rel="noopener">cobra</a></p>
+<p>复现使用的php代码</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">$sql=<span class="string">"insert into items (name,content,attachment,price,catelog_id,user_id,addtime,limit_time) values ('$name','$content','$attachment','$price','$catelog_id','$user_id',NOW(),'$limit_time')"</span>;</span><br><span class="line">$sql=<span class="string">"update items set name='$name2',content='$content',attachment='$attachment',price='$price',catelog_id='$catelog_id',user_id='$user_id',limit_time='$limit_time' where id=$id"</span>;</span><br><span class="line"><span class="keyword">echo</span> $sql;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>使用<code>CLI</code>模式运行<code>python cobra.py -t test.php</code>会发现程序一直卡着不动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">configparser.NoSectionError: No section: &apos;upload&apos;</span><br><span class="line">[11:40:09] [CRITICAL] ./configs file configure failed. http://cobra.feei.cn/config</span><br><span class="line">Error: No section: &apos;upload&apos;</span><br><span class="line">[11:40:09] [CRITICAL] Please config the config file copy from the config.template file</span><br><span class="line">[11:40:09] [INFO] [CLI] Target directory: /Users/kaixin.lin/Desktop/test2.php</span><br><span class="line">[11:40:09] [INFO] [DETECTION] [FRAMEWORK] Unknown Framework</span><br><span class="line">[11:40:09] [INFO] [CLI] [STATISTIC] Language: php Framework: Unknown Framework</span><br><span class="line">[11:40:09] [INFO] [CLI] [STATISTIC] Files: 1, Extensions:1, Consume: 6.300000000003525e-05</span><br><span class="line">[11:40:10] [INFO] [PUSH] 18 CVE Rules</span><br><span class="line">[11:40:11] [INFO] [PUSH] 95 Rules</span><br></pre></td></tr></table></figure>
+
+<p>打开debug模式看一下<code>python cobra.py -t test.php -d</code>，发现很多AST语法解析debug信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[11:41:19] [DEBUG] [AST] Binaryop --&gt; BinaryOp(&apos;.&apos;, BinaryOp(&apos;.&apos;, BinaryOp(&apos;.&apos;, &quot;insert into items (name,content,attachment,price,catelog_id,user_id,addtime,limit_time) values (&apos;&quot;, Variable(&apos;$name&apos;)), &quot;&apos;,&apos;&quot;), Variable(&apos;$content&apos;))</span><br><span class="line">[11:41:19] [DEBUG] [AST] Binaryop --&gt; BinaryOp(&apos;.&apos;, BinaryOp(&apos;.&apos;, &quot;insert into items (name,content,attachment,price,catelog_id,user_id,addtime,limit_time) values (&apos;&quot;, Variable(&apos;$name&apos;)), &quot;&apos;,&apos;&quot;)</span><br><span class="line">[11:41:19] [DEBUG] [AST] Binaryop --&gt; BinaryOp(&apos;.&apos;, &quot;insert into items (name,content,attachment,price,catelog_id,user_id,addtime,limit_time) values (&apos;&quot;, Variable(&apos;$name&apos;))</span><br></pre></td></tr></table></figure>
+
+<p>强制结束进程后观察程序报错信息，也可以在这里看到部分调用链</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">File &quot;/Users/kaixin.lin/Documents/penetration/cobra-master/cobra/parser.py&quot;, line 286, in parameters_back</span><br><span class="line">   param_expr, expr_lineno, is_re = get_expr_name(node.expr)  # param_expr为赋值表达式,param_expr为变量或者列表</span><br><span class="line"> File &quot;/Users/kaixin.lin/Documents/penetration/cobra-master/cobra/parser.py&quot;, line 191, in get_expr_name</span><br><span class="line">   param_expr = get_binaryop_params(node)</span><br><span class="line"> File &quot;/Users/kaixin.lin/Documents/penetration/cobra-master/cobra/parser.py&quot;, line 140, in get_binaryop_params</span><br><span class="line">   params_left = get_binaryop_deep_params(node.left, params)</span><br><span class="line"> File &quot;/Users/kaixin.lin/Documents/penetration/cobra-master/cobra/parser.py&quot;, line 160, in get_binaryop_deep_params</span><br><span class="line">   param = get_binaryop_params(node)</span><br><span class="line"> File &quot;/Users/kaixin.lin/Documents/penetration/cobra-master/cobra/parser.py&quot;, line 140, in get_binaryop_params</span><br><span class="line">   params_left = get_binaryop_deep_params(node.left, params)</span><br><span class="line"> File &quot;/Users/kaixin.lin/Documents/penetration/cobra-master/cobra/parser.py&quot;, line 160, in get_binaryop_deep_params</span><br><span class="line">   param = get_binaryop_params(node)</span><br><span class="line"> File &quot;/Users/kaixin.lin/Documents/penetration/cobra-master/cobra/parser.py&quot;, line 140, in get_binaryop_params</span><br><span class="line">   params_left = get_binaryop_deep_params(node.left, params)</span><br><span class="line"> File &quot;/Users/kaixin.lin/Documents/penetration/cobra-master/cobra/parser.py&quot;, line 160, in get_binaryop_deep_params</span><br><span class="line">   param = get_binaryop_params(node)</span><br><span class="line"> File &quot;/Users/kaixin.lin/Documents/penetration/cobra-master/cobra/parser.py&quot;, line 140, in get_binaryop_params</span><br><span class="line">   params_left = get_binaryop_deep_params(node.left, params)</span><br><span class="line"> File &quot;/Users/kaixin.lin/Documents/penetration/cobra-master/cobra/parser.py&quot;, line 160, in get_binaryop_deep_params</span><br><span class="line">   param = get_binaryop_params(node)</span><br><span class="line"> File &quot;/Users/kaixin.lin/Documents/penetration/cobra-master/cobra/parser.py&quot;, line 140, in get_binaryop_params</span><br><span class="line">   params_left = get_binaryop_deep_params(node.left, params)</span><br><span class="line"> File &quot;/Users/kaixin.lin/Documents/penetration/cobra-master/cobra/parser.py&quot;, line 160, in get_binaryop_deep_params</span><br><span class="line">   param = get_binaryop_params(node)</span><br><span class="line"> File &quot;/Users/kaixin.lin/Documents/penetration/cobra-master/cobra/parser.py&quot;, line 127, in get_binaryop_params</span><br><span class="line">   logger.debug(&apos;[AST] Binaryop --&gt; &#123;node&#125;&apos;.format(node=node))</span><br></pre></td></tr></table></figure>
+
+<p>可以发现这里应该是有一个递归 </p>
+<p>get_binaryop_params -&gt; get_binaryop_deep_params -&gt; get_binaryop_params -&gt;get_binaryop_deep_params</p>
+<p>##parser简单分析</p>
+<p>为了能简易的分析，使用更简单的测试样例</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">$sql=<span class="string">"insert into items (name) values ('$name')"</span>;</span><br><span class="line">$sql=<span class="string">"update items set name='$name2' where id=$id"</span>;</span><br><span class="line"><span class="keyword">echo</span> $sql;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>首先看到程序入口scan_parser</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">scan_parser</span><span class="params">(code_content, sensitive_func, vul_lineno, repair)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    开始检测函数</span></span><br><span class="line"><span class="string">    :param code_content: 要检测的文件内容</span></span><br><span class="line"><span class="string">    :param sensitive_func: 要检测的敏感函数,传入的为函数列表</span></span><br><span class="line"><span class="string">    :param vul_lineno: 漏洞函数所在行号</span></span><br><span class="line"><span class="string">    :param repair: 对应漏洞的修复函数列表</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">global</span> repairs</span><br><span class="line">        <span class="keyword">global</span> scan_results</span><br><span class="line">        repairs = repair</span><br><span class="line">        scan_results = []</span><br><span class="line">        parser = make_parser()</span><br><span class="line">        all_nodes = parser.parse(code_content, debug=<span class="literal">False</span>, lexer=lexer.clone(), tracking=with_line)</span><br><span class="line">        <span class="keyword">for</span> func <span class="keyword">in</span> sensitive_func:  <span class="comment"># 循环判断代码中是否存在敏感函数，若存在，递归判断参数是否可控;对文件内容循环判断多次</span></span><br><span class="line">            back_node = []</span><br><span class="line">            analysis(all_nodes, func, back_node, int(vul_lineno), function_params=<span class="literal">None</span>)</span><br><span class="line">    <span class="keyword">except</span> SyntaxError <span class="keyword">as</span> e:</span><br><span class="line">        logger.warning(<span class="string">'[AST] [ERROR]:&#123;e&#125;'</span>.format(e=e))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> scan_results</span><br></pre></td></tr></table></figure>
+
+<p>直接debug可以看到这里传进来的<code>sensitive_func, repair</code>，其中<code>sensitive_func</code>为<code>[&#39;echo&#39;, &#39;print&#39;, &#39;print_r&#39;, &#39;exit&#39;, &#39;die&#39;, &#39;printf&#39;, &#39;vprintf&#39;, &#39;trigger_error&#39;, &#39;user_error&#39;, &#39;odbc_result_all&#39;, &#39;ovrimos_result_all&#39;, &#39;ifx_htmltbl_result&#39;]</code>；<code>repair</code>为<code>[&#39;htmlspecialchars&#39;]</code></p>
+<p>接着到analysis，主要遍历判断当前代码是否有使用调用sensitive_func列表里面的函数以及根据函数分类进入不同的处理逻辑</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> isinstance(node, php.FunctionCall):  <span class="comment"># 函数直接调用，不进行赋值</span></span><br><span class="line">    anlysis_function(node, back_node, vul_function, function_params, vul_lineo)</span><br><span class="line"></span><br><span class="line"><span class="keyword">elif</span> isinstance(node, php.Assignment):  <span class="comment"># 函数调用在赋值表达式中</span></span><br><span class="line">    <span class="keyword">if</span> isinstance(node.expr, php.FunctionCall):</span><br><span class="line">        anlysis_function(node.expr, back_node, vul_function, function_params, vul_lineo)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> isinstance(node.expr, php.Eval):</span><br><span class="line">        analysis_eval(node.expr, vul_function, back_node, vul_lineo, function_params)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> isinstance(node.expr, php.Silence):</span><br><span class="line">        buffer_.append(node.expr)</span><br><span class="line">        analysis(buffer_, vul_function, back_node, vul_lineo, function_params)</span><br><span class="line"></span><br><span class="line"><span class="keyword">elif</span> isinstance(node, php.Print) <span class="keyword">or</span> isinstance(node, php.Echo):</span><br><span class="line">  	<span class="comment"># 进入analysis_echo_print</span></span><br><span class="line">    analysis_echo_print(node, back_node, vul_function, vul_lineo, function_params)</span><br><span class="line"></span><br><span class="line"><span class="keyword">elif</span> isinstance(node, php.Silence):</span><br><span class="line">    nodes = get_silence_params(node)</span><br><span class="line">    analysis(nodes, vul_function, back_node, vul_lineo)</span><br></pre></td></tr></table></figure>
+
+<p>可见样例代码中使用echo函数，因此进入了<code>elif isinstance(node, php.Print) or isinstance(node, php.Echo)</code>分支，进入<code>analysis_variable_node</code>等函数，而这里主要流程是</p>
+<ul>
+<li>取出参数</li>
+<li>回溯判断参数是否可控</li>
+<li>输出结果</li>
+</ul>
+<p>参数是否可控主要看变量是否在controlled_params里面</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">controlled_params = [</span><br><span class="line">        <span class="string">'$_GET'</span>,</span><br><span class="line">        <span class="string">'$_POST'</span>,</span><br><span class="line">        <span class="string">'$_REQUEST'</span>,</span><br><span class="line">        <span class="string">'$_COOKIE'</span>,</span><br><span class="line">        <span class="string">'$_FILES'</span>,</span><br><span class="line">        <span class="string">'$_SERVER'</span>,</span><br><span class="line">        <span class="string">'$HTTP_POST_FILES'</span>,</span><br><span class="line">        <span class="string">'$HTTP_COOKIE_VARS'</span>,</span><br><span class="line">        <span class="string">'$HTTP_REQUEST_VARS'</span>,</span><br><span class="line">        <span class="string">'$HTTP_POST_VARS'</span>,</span><br><span class="line">        <span class="string">'$HTTP_RAW_POST_DATA'</span>,</span><br><span class="line">        <span class="string">'$HTTP_GET_VARS'</span></span><br><span class="line">    ]</span><br></pre></td></tr></table></figure>
+
+<p>代码从下往上看$sql不是直接用户输入传入而是直接赋值的方式出现，因此会分析赋值语句右边的字符串</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"update items set name='$name2' where id=$id"</span></span><br></pre></td></tr></table></figure>
+
+<p>phply会把以上语句解析成<code>BinaryOp(&#39;.&#39;, BinaryOp(&#39;.&#39;, BinaryOp(&#39;.&#39;, &quot;update items set name=&#39;&quot;, Variable(&#39;$name2&#39;)), &quot;&#39; where id=&quot;), Variable(&#39;$id&#39;))</code>类似二叉树的形式逐步展开递归去遍历语句中的变量，二叉树的拆分如下（本来想画图，但是图实在不好画）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">node:	BinaryOp(&apos;.&apos;, BinaryOp(&apos;.&apos;, BinaryOp(&apos;.&apos;, &quot;update items set name=&apos;&quot;, Variable(&apos;$name2&apos;)), &quot;&apos; where id=&quot;), Variable(&apos;$id&apos;))</span><br><span class="line">left1:	BinaryOp(&apos;.&apos;, BinaryOp(&apos;.&apos;, &quot;update items set name=&apos;&quot;, Variable(&apos;$name2&apos;)), &quot;&apos; where id=&quot;)</span><br><span class="line">right2:	Variable(&apos;$id&apos;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">node(left1):	BinaryOp(&apos;.&apos;, BinaryOp(&apos;.&apos;, &quot;update items set name=&apos;&quot;, Variable(&apos;$name2&apos;)), &quot;&apos; where id=&quot;)</span><br><span class="line">left2:			BinaryOp(&apos;.&apos;, &quot;update items set name=&apos;&quot;, Variable(&apos;$name2&apos;))</span><br><span class="line">right2:			&apos;\&apos; where id=&apos;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">node(left2):	BinaryOp(&apos;.&apos;, &quot;update items set name=&apos;&quot;, Variable(&apos;$name2&apos;))</span><br><span class="line">left3:			&apos;update items set name=\&apos;&apos;</span><br><span class="line">right3:			Variable(&apos;$name2&apos;)</span><br></pre></td></tr></table></figure>
+
+<p>可以看到遍历结果应该是只有两个变量<code>Variable(&#39;$id&#39;)</code>以及<code>Variable(&#39;$name2&#39;)</code></p>
+<p>当程序走到<code>get_binaryop_params</code>方法的时候</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_binaryop_params</span><span class="params">(node)</span>:</span>  <span class="comment"># 当为BinaryOp类型时，分别对left和right进行处理，取出需要的变量</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    用来提取Binaryop中的参数</span></span><br><span class="line"><span class="string">    :param node:</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    logger.debug(<span class="string">'[AST] Binaryop --&gt; &#123;node&#125;'</span>.format(node=node))</span><br><span class="line">    params = []</span><br><span class="line">    buffer_ = []</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> isinstance(node.left, php.Variable) <span class="keyword">or</span> isinstance(node.right, php.Variable):  <span class="comment"># left, right都为变量直接取值</span></span><br><span class="line">        <span class="keyword">if</span> isinstance(node.left, php.Variable):</span><br><span class="line">            params.append(node.left.name)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> isinstance(node.right, php.Variable):</span><br><span class="line">            params.append(node.right.name)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> isinstance(node.right, php.Variable) <span class="keyword">or</span> <span class="keyword">not</span> isinstance(node.left, php.Variable):  <span class="comment"># right不为变量时</span></span><br><span class="line">        params_right = get_binaryop_deep_params(node.right, params)</span><br><span class="line">        params_left = get_binaryop_deep_params(node.left, params)</span><br><span class="line"></span><br><span class="line">        params = params_left + params_right</span><br><span class="line"></span><br><span class="line">    params = export_list(params, buffer_)</span><br><span class="line">    <span class="keyword">return</span> params</span><br></pre></td></tr></table></figure>
+
+<p>再进入到<code>get_binaryop_deep_params</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">def <span class="title">get_binaryop_deep_params</span><span class="params">(node, params)</span>:  # 取出right，left不为变量时，对象结构中的变量</span></span><br><span class="line"><span class="function">    """</span></span><br><span class="line"><span class="function">    取出深层的变量名</span></span><br><span class="line"><span class="function">    :param node: node为上一步中的node.left或者node.right节点</span></span><br><span class="line"><span class="function">    :param params:</span></span><br><span class="line"><span class="function">    :return:</span></span><br><span class="line"><span class="function">    """</span></span><br><span class="line"><span class="function">    <span class="keyword">if</span> <span class="title">isinstance</span><span class="params">(node, php.ArrayOffset)</span>:  # node为数组，取出数组变量名</span></span><br><span class="line"><span class="function">        param </span>= get_node_name(node.node)</span><br><span class="line">        params.append(param)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">if</span> <span class="title">isinstance</span><span class="params">(node, php.BinaryOp)</span>:  # node为BinaryOp，递归取出其中变量</span></span><br><span class="line"><span class="function">        param </span>= get_binaryop_params(node)</span><br><span class="line">        params.append(param)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">if</span> <span class="title">isinstance</span><span class="params">(node, php.FunctionCall)</span>:  # node为FunctionCall，递归取出其中变量名</span></span><br><span class="line"><span class="function">        params </span>= get_all_params(node.params)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> params</span><br></pre></td></tr></table></figure>
+
+<p>这里有一个递归调用过程，但是<code>get_binaryop_params</code>对params的处理是有问题的。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">params_right = get_binaryop_deep_params(node.right, params)</span><br><span class="line">params_left = get_binaryop_deep_params(node.left, params)</span><br><span class="line">params = params_left + params_right</span><br></pre></td></tr></table></figure>
+
+<p>params传进去<code>get_binaryop_deep_params</code>，再传出来赋给right和left最后再相加，明显就会出现重复的问题。</p>
+<p><img src="image-20200119111113177.png" alt="image-20200119111113177"></p>
+<p>在递归过程中就会产生很多很多重复的变量，因此程序卡着不断回溯处理相同的变量。</p>
+<h2 id="修复方案"><a href="#修复方案" class="headerlink" title="修复方案"></a>修复方案</h2><p>修复方式直接在函数里对params去重就好了（朋友提出的修复方式）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> isinstance(param_expr, list):</span><br><span class="line">		param_expr = list(set(param_expr))</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/01/19/Halo-任意文件上传/" rel="next" title="Halo 任意文件上传">
+                <i class="fa fa-chevron-left"></i> Halo 任意文件上传
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Shad0w</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/PeteLing" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#起因"><span class="nav-number">1.</span> <span class="nav-text">起因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修复方案"><span class="nav-number">2.</span> <span class="nav-text">修复方案</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Shad0w</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
