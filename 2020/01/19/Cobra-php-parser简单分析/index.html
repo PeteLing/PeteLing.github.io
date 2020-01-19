@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="起因朋友发现了Cobra php版本白盒审计工具有个DOS的bug，于是想着审一下代码调试一下看看是哪里的问题。具体工具介绍和使用方法就不多赘述了，详细可以看一下cobra 复现使用的php代码 12345&amp;lt;?php$sql=&quot;insert into items (name,content,attachment,price,catelog_id,user_id,addtime,limit_t">
+<meta name="description" content="起因朋友发现了Cobra php版本白盒审计工具有个DOS的bug，于是想着审一下代码调试一下看看是哪里的问题。具体工具介绍和使用方法就不多赘述了，详细可以看一下cobra">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Cobra-php parser简单分析">
 <meta property="og:url" content="http://yoursite.com/2020/01/19/Cobra-php-parser简单分析/index.html">
 <meta property="og:site_name" content="Eight Dimensions">
-<meta property="og:description" content="起因朋友发现了Cobra php版本白盒审计工具有个DOS的bug，于是想着审一下代码调试一下看看是哪里的问题。具体工具介绍和使用方法就不多赘述了，详细可以看一下cobra 复现使用的php代码 12345&amp;lt;?php$sql=&quot;insert into items (name,content,attachment,price,catelog_id,user_id,addtime,limit_t">
+<meta property="og:description" content="起因朋友发现了Cobra php版本白盒审计工具有个DOS的bug，于是想着审一下代码调试一下看看是哪里的问题。具体工具介绍和使用方法就不多赘述了，详细可以看一下cobra">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://yoursite.com/2020/01/19/Cobra-php-parser简单分析/image-20200119111113177.png">
-<meta property="og:updated_time" content="2020-01-19T06:08:18.803Z">
+<meta property="og:updated_time" content="2020-01-19T06:12:37.274Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Cobra-php parser简单分析">
-<meta name="twitter:description" content="起因朋友发现了Cobra php版本白盒审计工具有个DOS的bug，于是想着审一下代码调试一下看看是哪里的问题。具体工具介绍和使用方法就不多赘述了，详细可以看一下cobra 复现使用的php代码 12345&amp;lt;?php$sql=&quot;insert into items (name,content,attachment,price,catelog_id,user_id,addtime,limit_t">
+<meta name="twitter:description" content="起因朋友发现了Cobra php版本白盒审计工具有个DOS的bug，于是想着审一下代码调试一下看看是哪里的问题。具体工具介绍和使用方法就不多赘述了，详细可以看一下cobra">
 <meta name="twitter:image" content="http://yoursite.com/2020/01/19/Cobra-php-parser简单分析/image-20200119111113177.png">
 
 
@@ -322,6 +322,8 @@
 
       
         <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>朋友发现了Cobra php版本白盒审计工具有个DOS的bug，于是想着审一下代码调试一下看看是哪里的问题。具体工具介绍和使用方法就不多赘述了，详细可以看一下<a href="https://github.com/WhaleShark-Team/cobra" target="_blank" rel="noopener">cobra</a></p>
+<a id="more"></a>
+
 <p>复现使用的php代码</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">$sql=<span class="string">"insert into items (name,content,attachment,price,catelog_id,user_id,addtime,limit_time) values ('$name','$content','$attachment','$price','$catelog_id','$user_id',NOW(),'$limit_time')"</span>;</span><br><span class="line">$sql=<span class="string">"update items set name='$name2',content='$content',attachment='$attachment',price='$price',catelog_id='$catelog_id',user_id='$user_id',limit_time='$limit_time' where id=$id"</span>;</span><br><span class="line"><span class="keyword">echo</span> $sql;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
 
