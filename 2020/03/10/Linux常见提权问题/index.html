@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="Linux常见提权问题[toc] Linux crontab提权Crontab文件覆写环境搭建以下测试均在ubuntu18.04下进行 Ubuntu切换到root账号sudo su，新建一个测试账号adduser test。然后根据系统提示进行密码和注释性描述的配置，全程不用自己输入其他命令即可配置成功，用户主目录和命令解析程序都是系统自动指定。 cat /etc/passwd 可看到test:x">
+<meta name="description" content="Linux提权">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux常见提权问题">
 <meta property="og:url" content="http://yoursite.com/2020/03/10/Linux常见提权问题/index.html">
 <meta property="og:site_name" content="Eight Dimensions">
-<meta property="og:description" content="Linux常见提权问题[toc] Linux crontab提权Crontab文件覆写环境搭建以下测试均在ubuntu18.04下进行 Ubuntu切换到root账号sudo su，新建一个测试账号adduser test。然后根据系统提示进行密码和注释性描述的配置，全程不用自己输入其他命令即可配置成功，用户主目录和命令解析程序都是系统自动指定。 cat /etc/passwd 可看到test:x">
+<meta property="og:description" content="Linux提权">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://yoursite.com/2020/03/10/Linux常见提权问题/image-20200107165535034.png">
 <meta property="og:image" content="http://yoursite.com/2020/03/10/Linux常见提权问题/image-20200107170116227.png">
@@ -97,10 +97,10 @@
 <meta property="og:image" content="http://yoursite.com/2020/03/10/Linux常见提权问题/image-20200116182608608.png">
 <meta property="og:image" content="http://yoursite.com/2020/03/10/Linux常见提权问题/image-20200120162201249.png">
 <meta property="og:image" content="http://yoursite.com/2020/03/10/Linux常见提权问题/image-20200120174759597.png">
-<meta property="og:updated_time" content="2020-03-10T15:33:27.217Z">
+<meta property="og:updated_time" content="2020-03-10T15:57:04.024Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux常见提权问题">
-<meta name="twitter:description" content="Linux常见提权问题[toc] Linux crontab提权Crontab文件覆写环境搭建以下测试均在ubuntu18.04下进行 Ubuntu切换到root账号sudo su，新建一个测试账号adduser test。然后根据系统提示进行密码和注释性描述的配置，全程不用自己输入其他命令即可配置成功，用户主目录和命令解析程序都是系统自动指定。 cat /etc/passwd 可看到test:x">
+<meta name="twitter:description" content="Linux提权">
 <meta name="twitter:image" content="http://yoursite.com/2020/03/10/Linux常见提权问题/image-20200107165535034.png">
 
 
@@ -331,8 +331,12 @@
       
 
       
-        <h1 id="Linux常见提权问题"><a href="#Linux常见提权问题" class="headerlink" title="Linux常见提权问题"></a>Linux常见提权问题</h1><p>[toc]</p>
-<h2 id="Linux-crontab提权"><a href="#Linux-crontab提权" class="headerlink" title="Linux crontab提权"></a>Linux crontab提权</h2><h3 id="Crontab文件覆写"><a href="#Crontab文件覆写" class="headerlink" title="Crontab文件覆写"></a>Crontab文件覆写</h3><h4 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h4><p>以下测试均在ubuntu18.04下进行</p>
+        <p>Linux提权</p>
+<a id="more"></a>
+
+
+
+<h1 id="Linux常见提权问题"><a href="#Linux常见提权问题" class="headerlink" title="Linux常见提权问题"></a>Linux常见提权问题</h1><h2 id="Linux-crontab提权"><a href="#Linux-crontab提权" class="headerlink" title="Linux crontab提权"></a>Linux crontab提权</h2><h3 id="Crontab文件覆写"><a href="#Crontab文件覆写" class="headerlink" title="Crontab文件覆写"></a>Crontab文件覆写</h3><h4 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h4><p>以下测试均在ubuntu18.04下进行</p>
 <p>Ubuntu切换到root账号<code>sudo su</code>，新建一个测试账号<code>adduser test</code>。然后根据系统提示进行密码和注释性描述的配置，全程不用自己输入其他命令即可配置成功，用户主目录和命令解析程序都是系统自动指定。</p>
 <p>cat /etc/passwd 可看到<code>test:x:1001:1001:,,,:/home/test:/bin/bash</code></p>
 <blockquote>
